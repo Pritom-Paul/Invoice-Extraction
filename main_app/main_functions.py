@@ -22,26 +22,29 @@ from pdf_extraction.extract_tables_with_pdfplumber import extract_tables_with_pd
 
 
 def extract_pdf_data(directory):
-    pdf_files = [file for file in os.listdir(directory) if file.endswith('.pdf')]
-    all_invoice_data = []
-    for pdf_file in pdf_files:
-        pdf_path = os.path.join(directory, pdf_file)
-        text = extract_text_with_pdfplumber(pdf_path)
-        invoice_numbers = extract_invoice_numbers(text)
-        invoice_dates = extract_invoice_dates(text)
-        hs_codes = extract_hs_code(text)
-        goods_types = extract_goods_type(text)
-        quantities = extract_quantity(text)
-        MOT_values = extract_MOT(text)
-        goods_descriptions = extract_goods_description(text)
-        hm_codes = extract_hm_code(text)
-        exporter_refs = extract_exporter_refs(directory)  # Get exporter references
-        for number, date, hs_code, goods_type, quantity, MOT, description, hm_code, exporter_ref in zip(
-                invoice_numbers, invoice_dates, hs_codes,
-                goods_types, quantities, MOT_values, goods_descriptions, hm_codes,
-                exporter_refs['Exporters Ref']):
-            all_invoice_data.append(
-                {'Invoice Number': number, 'Invoice Date': date, 'Exporters Ref': exporter_ref,
-                 'HS Code': hs_code, 'Goods Type': goods_type, 'Goods Description': description,
-                 'Quantity': quantity, 'HM Code': hm_code, 'MOT': MOT, 'Fcr Status': None})
-    return all_invoice_data
+    try:
+        pdf_files = [file for file in os.listdir(directory) if file.endswith('.pdf')]
+        all_invoice_data = []
+        for pdf_file in pdf_files:
+            pdf_path = os.path.join(directory, pdf_file)
+            text = extract_text_with_pdfplumber(pdf_path)
+            invoice_numbers = extract_invoice_numbers(text)
+            invoice_dates = extract_invoice_dates(text)
+            hs_codes = extract_hs_code(text)
+            goods_types = extract_goods_type(text)
+            quantities = extract_quantity(text)
+            MOT_values = extract_MOT(text)
+            goods_descriptions = extract_goods_description(text)
+            hm_codes = extract_hm_code(text)
+            exporter_refs = extract_exporter_refs(directory)  # Get exporter references
+            for number, date, hs_code, goods_type, quantity, MOT, description, hm_code, exporter_ref in zip(
+                    invoice_numbers, invoice_dates, hs_codes,
+                    goods_types, quantities, MOT_values, goods_descriptions, hm_codes,
+                    exporter_refs['Exporters Ref']):
+                all_invoice_data.append(
+                    {'Invoice Number': number, 'Invoice Date': date, 'Exporters Ref': exporter_ref,
+                     'HS Code': hs_code, 'Goods Type': goods_type, 'Goods Description': description,
+                     'Quantity': quantity, 'HM Code': hm_code, 'MOT': MOT, 'Fcr Status': None})
+        return all_invoice_data
+    except Exception as e:
+        raise Exception(f'Error occurred while extracting data from {directory}: {str(e)}')
