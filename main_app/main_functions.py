@@ -43,5 +43,5 @@ def extract_pdf_data(directory):
             all_invoice_data.append(
                 {'Invoice Number': number, 'Invoice Date': date, 'Exporters Ref': exporter_ref,
                  'HS Code': hs_code, 'Goods Type': goods_type, 'Goods Description': description,
-                 'Quantity': quantity, 'HM Code': hm_code, 'MOT': MOT})
+                 'Quantity': quantity, 'HM Code': hm_code, 'MOT': MOT, 'Fcr Status': None})
     return all_invoice_data
