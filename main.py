@@ -5,7 +5,7 @@ from csv_extraction.csv_functions import save_excel
 import pandas as pd
 
 if __name__ == "__main__":
-    directory = r'C:\Users\pc\Desktop\Invoice-Extraction\Invoices'
+    directory = r'C:\Users\pc\Desktop\new_Invoice'
 
     try:
         all_invoice_data = extract_pdf_data(directory)
@@ -17,6 +17,8 @@ if __name__ == "__main__":
 
         # Print DataFrame to CSV file in the same directory
         save_excel(df, 'invoice_data')
+
+        print(df)
 
     except Exception as e:
         print(f"An error occurred: {str(e)}")
