@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
         df['Exporters Ref'] = exporter_refs_df['Exporters Ref']
 
-        # Print DataFrame to CSV file in the same directory
+        # Print DataFrame to EXCEL file in the same directory
         save_excel(df, 'invoice_data')
 
         print(df)
