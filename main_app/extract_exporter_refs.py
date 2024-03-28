@@ -18,6 +18,9 @@ def extract_exporter_refs(directory):
                     if 'Exporters Ref:' in exporter_ref:
                         exporter_ref = exporter_ref.replace('Exporters Ref:', '').replace('\n', ' ')
                         exporter_ref = exporter_ref.replace('Cont. No.', '')
+                        # Check if the cleaned exporter reference starts with "s/c no :"
+                        if exporter_ref.strip().startswith("s/c no :"):
+                            exporter_ref = exporter_ref.strip()[8:]  # Strip "s/c no :" from the start
                         exporter_refs.append(exporter_ref.strip())
         return pd.DataFrame(exporter_refs, columns=['Exporters Ref'])
     except Exception as e:
