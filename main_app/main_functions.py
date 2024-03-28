@@ -9,7 +9,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from pdf_extraction.extract_text_with_pdfplumber import extract_text_with_pdfplumber
 from pdf_extraction.extract_invoice_numbers import extract_invoice_numbers
-#from pdf_extraction.extract_invoice_dates import extract_invoice_dates
+from pdf_extraction.extract_invoice_dates import extract_invoice_dates
 from pdf_extraction.extract_hs_code import extract_hs_code
 from pdf_extraction.extract_goods_type import extract_goods_type
 from pdf_extraction.extract_quantity import extract_quantity
@@ -29,20 +29,20 @@ def extract_pdf_data(directory):
             pdf_path = os.path.join(directory, pdf_file)
             text = extract_text_with_pdfplumber(pdf_path)
             invoice_numbers = extract_invoice_numbers(text)
-            #invoice_dates = extract_invoice_dates(text)
+            invoice_dates = extract_invoice_dates(text)
             hs_codes = extract_hs_code(text)
             goods_types = extract_goods_type(text)
             quantities = extract_quantity(text)
             MOT_values = extract_MOT(text)
             goods_descriptions = extract_goods_description(text)
             hm_codes = extract_hm_code(text)
-            exporter_refs = extract_exporter_refs(directory)  # Get exporter references
+            exporter_refs = extract_exporter_refs(directory)  
             for number, hs_code, goods_type, quantity, MOT, description, hm_code, exporter_ref in zip(
                     invoice_numbers, hs_codes,
                     goods_types, quantities, MOT_values, goods_descriptions, hm_codes,
                     exporter_refs['Exporters Ref']):
                 all_invoice_data.append(
-                    {'Invoice Number': number,'Exporters Ref': exporter_ref,
+                    {'Invoice Number': number,'Exporters Ref': exporter_ref, 'Invoice Date': invoice_dates,
                      'HS Code': hs_code, 'Goods Type': goods_type, 'Goods Description': description,
                      'Quantity': quantity, 'HM Code': hm_code, 'MOT': MOT, 'Fcr Status': None})
         return all_invoice_data
