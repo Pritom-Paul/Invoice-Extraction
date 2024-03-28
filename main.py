@@ -5,7 +5,7 @@ from csv_extraction.csv_functions import save_excel
 import pandas as pd
 
 if __name__ == "__main__":
-    directory = r'C:\Users\Altersense\Desktop\new_Invoice\test'
+    directory = r'C:\Users\Altersense\Desktop\New folder'
 
     try:
         all_invoice_data = extract_pdf_data(directory)

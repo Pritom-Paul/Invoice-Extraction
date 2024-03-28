@@ -13,6 +13,9 @@ def extract_goods_description(text):
             first_sentence = ' '.join(first_sentence)
             next_line = lines[i+1]
             description = f"{first_sentence} {next_line}"
+            if "Container" in description:
+                description = description.split("Container")[0].strip()
             goods_descriptions.append(description)
             found_usd_usd = False
     return goods_descriptions
+
