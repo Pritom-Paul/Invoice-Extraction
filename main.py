@@ -13,10 +13,10 @@ if __name__ == "__main__":
 
         exporter_refs_df = extract_exporter_refs(directory)
 
-        df['Exporters Ref'] = exporter_refs_df['Exporters Ref']
+        #df['Exporters Ref'] = exporter_refs_df['Exporters Ref']
 
         # Print DataFrame to EXCEL file in the same directory
-        #save_excel(df, 'invoice_data')
+        save_excel(df, 'invoice_data')
 
         print(df)
 

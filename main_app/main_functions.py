@@ -23,7 +23,7 @@ from pdf_extraction.extract_tables_with_pdfplumber import extract_tables_with_pd
 
 def extract_pdf_data(directory):
     try:
-        pdf_files = [file for file in os.listdir(directory) if file.endswith('.pdf')]
+        pdf_files = [file for file in os.listdir(directory) if file.lower().endswith(('.pdf', '.PDF'))]
         all_invoice_data = []
         for pdf_file in pdf_files:
             pdf_path = os.path.join(directory, pdf_file)
@@ -42,9 +42,9 @@ def extract_pdf_data(directory):
                     goods_types, quantities, MOT_values, goods_descriptions, hm_codes,
                     exporter_refs['Exporters Ref']):
                 all_invoice_data.append(
-                    {'Invoice Number': number,'Exporters Ref': exporter_ref, 'Invoice Date': invoice_dates,
-                     'HS Code': hs_code, 'Goods Type': goods_type, 'Goods Description': description,
-                     'Quantity': quantity, 'HM Code': hm_code, 'MOT': MOT, 'Fcr Status': None})
+                    {'INVOICE NO': number,'EXPORTERS REF': exporter_ref, 'INVOICE DATE': invoice_dates,
+                     'HS CODE': hs_code, 'DESCRIPTION': goods_type, 'COMPOSITION': description,
+                     'QUANTITY': quantity, 'PO NO': hm_code, 'COUNTRY ISO': MOT, 'FCR STATUS': None})
         return all_invoice_data
     except Exception as e:
         raise Exception(f'Error occurred while extracting data from {directory}: {str(e)}')
