@@ -26,7 +26,7 @@ def extract_pdf_data(directory):
         pdf_files = [file for file in os.listdir(directory) if file.lower().endswith(('.pdf', '.PDF'))]
         all_invoice_data = []
         for pdf_file in pdf_files:
-            pdf_path = os.path.join(directory, pdf_file)
+            pdf_path = os.path.join(directory, pdf_file)  # Ensure this is defined inside the loop
             text = extract_text_with_pdfplumber(pdf_path)
             invoice_numbers = extract_invoice_numbers(text)
             invoice_dates = extract_invoice_dates(text)
@@ -36,15 +36,25 @@ def extract_pdf_data(directory):
             MOT_values = extract_MOT(text)
             goods_descriptions = extract_goods_description(text)
             hm_codes = extract_hm_code(text)
-            exporter_refs = extract_exporter_refs(directory)  
-            for number, hs_code, goods_type, quantity, MOT, description, hm_code, exporter_ref in zip(
-                    invoice_numbers, hs_codes,
-                    goods_types, quantities, MOT_values, goods_descriptions, hm_codes,
-                    exporter_refs['Exporters Ref']):
-                all_invoice_data.append(
-                    {'INVOICE NO': number,'EXPORTERS REF': exporter_ref, 'INVOICE DATE': invoice_dates,
-                     'HS CODE': hs_code, 'DESCRIPTION': goods_type, 'COMPOSITION': description,
-                     'QUANTITY': quantity, 'PO NO': hm_code, 'COUNTRY ISO': MOT, 'FCR STATUS': None})
+            exporter_refs = extract_exporter_refs(pdf_path)  # Correct use of pdf_path
+
+            # Assuming only one exporter_ref per PDF, adjust logic accordingly
+            exporter_ref = exporter_refs[0] if exporter_refs else "N/A"
+
+            for number, hs_code, goods_type, quantity, MOT, description, hm_code in zip(
+                    invoice_numbers, hs_codes, goods_types, quantities, MOT_values, goods_descriptions, hm_codes):
+                all_invoice_data.append({
+                    'INVOICE NO': number,
+                    'INVOICE DATE':invoice_dates, 
+                    'EXPORTERS REF': exporter_ref,
+                    'HS CODE': hs_code,
+                    'DESCRIPTION': goods_type,
+                    'COMPOSITION': description,
+                    'QUANTITY': quantity,
+                    'PO NO': hm_code,
+                    'COUNTRY ISO': MOT,
+                    'FCR STATUS': None
+                })
         return all_invoice_data
     except Exception as e:
         raise Exception(f'Error occurred while extracting data from {directory}: {str(e)}')
