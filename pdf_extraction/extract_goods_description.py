@@ -10,28 +10,27 @@ def extract_goods_description(text):
             i += 1
             continue
         if found_usd_usd:
-            # Process first sentence to exclude any text following a parenthesis or specific patterns
-            first_sentence_parts = line.split()[:-3]
-            first_sentence = ' '.join(first_sentence_parts)
-            if "(" in first_sentence:
-                first_sentence = first_sentence.split("(")[0].strip()
-            elif ")" in first_sentence:
-                first_sentence = first_sentence.split(")")[0].strip()
-            
-            next_line = lines[i+1]
-            # Adjust to handle both opening and closing parenthesis, and specific patterns in next line
-            if "(" in next_line:
-                next_line = next_line.split("(")[0].strip()
-            elif ")" in next_line:
-                next_line = next_line.split(")")[0].strip()
-
-            # Applying PCS/PACK trimming to both first_sentence and next_line
-            if "PCS/PACK" in first_sentence:
-                first_sentence = first_sentence.split("PCS/PACK")[0].strip()
-            if "PCS/PACK" in next_line:
-                next_line = next_line.split("PCS/PACK")[0].strip()
+            description_parts = []
+            # Special processing for the first line after "USD USD"
+            if i < len(lines):
+                first_sentence = lines[i].split()[:-3]
+                first_sentence = ' '.join(first_sentence)  # Preserve spaces between words
                 
-            description = f"{first_sentence} {next_line}".strip()
+                # Further clean-up for parenthesis within the first sentence
+                first_sentence = first_sentence.split('PCS/PACK')[0].split('(')[0].split(')')[0].strip()
+                # Strip double quotes if present
+                if first_sentence.startswith('"'):
+                    first_sentence = first_sentence[1:].strip()
+                description_parts.append(first_sentence)
+                i += 1
+
+            # Process subsequent lines
+            while i < len(lines) and not lines[i].startswith("Container"):
+                current_sentence = lines[i].split('PCS/PACK')[0].split('(')[0].split(')')[0].strip()
+                description_parts.append(current_sentence)
+                i += 1
+            
+            description = " ".join(description_parts).strip()
             if "Container" in description:
                 description = description.split("Container")[0].strip()
             goods_descriptions.append(description)
@@ -39,4 +38,3 @@ def extract_goods_description(text):
         else:
             i += 1
     return goods_descriptions
-
