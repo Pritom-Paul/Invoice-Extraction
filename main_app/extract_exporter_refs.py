@@ -17,8 +17,6 @@ def extract_exporter_refs(pdf_path):
                     exporter_ref = exporter_ref.replace('Cont. No.', '')
                     if exporter_ref.strip().lower().startswith("s/c no :".lower()) or exporter_ref.strip().lower().startswith("S/C NO:".lower()):
                         exporter_ref = exporter_ref.strip()[8:]  # Strip "s/c no :" from the start
-                    exporter_ref = exporter_ref.replace("S/C :", "")
-                    exporter_ref = exporter_ref.replace("S/C:", "")  # Remove "S/C :" prefix
                     exporter_refs.append(exporter_ref.strip())
         return exporter_refs
     except Exception as e:

@@ -10,28 +10,33 @@ def extract_goods_description(text):
             i += 1
             continue
         if found_usd_usd:
-            description_parts = []
-            # Special processing for the first line after "USD USD"
-            if i < len(lines):
-                first_line = lines[i].split()[:-3]  # Removing the last three words
-                first_line = ' '.join(first_line)
-                # Further clean-up for parenthesis within the first line
-                first_line = first_line.split('PCS/PACK')[0].split('(')[0].split(')')[0].strip()
-                # Strip double quotes if present
-                if first_line.startswith('"') :
-                    first_line = first_line[1:].strip()
-                description_parts.append(first_line)
-                i += 1
-
-            # Process subsequent lines
-            while i < len(lines) and not lines[i].startswith("Container"):
-                current_line = lines[i].split('PCS/PACK')[0].split('(')[0].split(')')[0].strip()
-                description_parts.append(current_line)
-                i += 1
+            # Process first sentence to exclude any text following a parenthesis or specific patterns
+            first_sentence_parts = line.split()[:-3]
+            first_sentence = ' '.join(first_sentence_parts)
+            if "(" in first_sentence:
+                first_sentence = first_sentence.split("(")[0].strip()
+            elif ")" in first_sentence:
+                first_sentence = first_sentence.split(")")[0].strip()
             
-            description = " ".join(description_parts).strip()
+            next_line = lines[i+1]
+            # Adjust to handle both opening and closing parenthesis, and specific patterns in next line
+            if "(" in next_line:
+                next_line = next_line.split("(")[0].strip()
+            elif ")" in next_line:
+                next_line = next_line.split(")")[0].strip()
+
+            # Applying PCS/PACK trimming to both first_sentence and next_line
+            if "PCS/PACK" in first_sentence:
+                first_sentence = first_sentence.split("PCS/PACK")[0].strip()
+            if "PCS/PACK" in next_line:
+                next_line = next_line.split("PCS/PACK")[0].strip()
+                
+            description = f"{first_sentence} {next_line}".strip()
+            if "Container" in description:
+                description = description.split("Container")[0].strip()
             goods_descriptions.append(description)
             found_usd_usd = False
         else:
             i += 1
     return goods_descriptions
+

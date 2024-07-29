@@ -30,7 +30,7 @@ def extract_pdf_data(directory):
         invoice_filenames = []
 
         for pdf_file in pdf_files:
-            pdf_path = os.path.join(directory, pdf_file)  # Ensure this is defined inside the loop
+            pdf_path = os.path.join(directory, pdf_file)  # Ensure this is defined inside the loop  # Ensure this is defined inside the loop
             text = extract_text_with_pdfplumber(pdf_path)
             invoice_numbers = extract_invoice_numbers(text)
             invoice_dates = extract_invoice_dates(text)
