@@ -19,7 +19,9 @@ from pdf_extraction.extract_description import extract_description
 from pdf_extraction.extract_goods_description import extract_goods_description
 from main_app.extract_exporter_refs import extract_exporter_refs
 from pdf_extraction.extract_tables_with_pdfplumber import extract_tables_with_pdfplumber
-
+from pdf_extraction.extract_toPay import extract_to_pay
+from pdf_extraction.extract_POL import extract_POL
+from pdf_extraction.extract_warehouse_id import extract_warehouse_id
 
 def extract_pdf_data(directory):
     try:
@@ -28,6 +30,7 @@ def extract_pdf_data(directory):
         valid_invoices = 0
         invoice_filecount = 0
         invoice_filenames = []
+        text=""
 
         for pdf_file in pdf_files:
             pdf_path = os.path.join(directory, pdf_file)  # Ensure this is defined inside the loop  # Ensure this is defined inside the loop
@@ -41,6 +44,9 @@ def extract_pdf_data(directory):
             goods_descriptions = extract_goods_description(text)
             hm_codes = extract_hm_code(text)
             exporter_refs = extract_exporter_refs(pdf_path)  # Correct use of pdf_path
+            toPay=extract_to_pay(text)
+            POL=extract_POL(text)
+            warehouse_id=extract_warehouse_id(text)
 
             # Check if any invoice number is extracted
             if invoice_numbers:
@@ -52,21 +58,24 @@ def extract_pdf_data(directory):
 
             exporter_ref = exporter_refs[0] if exporter_refs else "N/A"
 
-            for number, hs_code, goods_type, quantity, MOT, description, hm_code in zip(
-                    invoice_numbers, hs_codes, goods_types, quantities, MOT_values, goods_descriptions, hm_codes):
+            for number, hs_code, toPay, POL, warehouse_id, goods_type, quantity, MOT, description, hm_code in zip(
+                    invoice_numbers, hs_codes, toPay, POL, warehouse_id, goods_types, quantities, MOT_values, goods_descriptions, hm_codes):
                 
 
                 all_invoice_data.append({
                     'INVOICE NO': number,
-                    'INVOICE DATE': invoice_dates, 
+                    # 'INVOICE DATE': invoice_dates, 
                     'EXPORTERS REF': exporter_ref,
-                    'HS CODE': hs_code,
-                    'DESCRIPTION': goods_type,
-                    'COMPOSITION': description,
-                    'QUANTITY': quantity,
-                    'PO NO': hm_code,
-                    'COUNTRY ISO': MOT,
-                    'FCR STATUS': None
+                    # 'HS CODE': hs_code,
+                    # 'DESCRIPTION': goods_type,
+                    # 'COMPOSITION': description,
+                    # 'QUANTITY': quantity,
+                    # 'PO NO': hm_code,
+                    # 'COUNTRY ISO': MOT,
+                    # 'TO PAY': toPay,
+                    # 'POL': POL,
+                    # 'WAREHOUSE ID': warehouse_id,
+                    # 'FCR STATUS': None
                 })
                 valid_invoices += 1
                 invoice_filenames.remove(pdf_file)

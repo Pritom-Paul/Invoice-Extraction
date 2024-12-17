@@ -1,3 +1,4 @@
+import re
 def extract_goods_description(text):
     goods_descriptions = []
     lines = text.split('\n')
@@ -13,8 +14,14 @@ def extract_goods_description(text):
             description_parts = []
             # Special processing for the first line after "USD USD"
             if i < len(lines):
-                first_sentence = lines[i].split()[:-3]
-                first_sentence = ' '.join(first_sentence)  # Preserve spaces between words
+                words = lines[i].split()
+                if len(words) > 3:
+                    first_sentence = ' '.join(words[:-3])  # Preserve spaces between words
+                else:
+                    i += 1
+                    if i < len(lines):
+                        words = lines[i].split()
+                        first_sentence = ' '.join(words[:-3])  # Preserve spaces between words
                 
                 # Further clean-up for parenthesis within the first sentence
                 first_sentence = first_sentence.split('PCS/PACK')[0].split('(')[0].split(')')[0].strip()
@@ -33,6 +40,11 @@ def extract_goods_description(text):
             description = " ".join(description_parts).strip()
             if "Container" in description:
                 description = description.split("Container")[0].strip()
+
+            # Trim description at the first occurrence of "cat" (case-insensitive) as a whole word
+            index_of_cat = re.search(r'\bcat\b', description, flags=re.IGNORECASE)
+            if index_of_cat:
+                description = description[:index_of_cat.start()].strip()
             goods_descriptions.append(description)
             found_usd_usd = False
         else:
