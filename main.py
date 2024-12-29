@@ -7,7 +7,7 @@ import os
 
 
 if __name__ == "__main__":
-    directory = r'C:\Users\Altersense\Desktop\NEW'
+    directory = r'C:\Users\Altersense\Desktop\NEW\Bitopi'
 
     try:
         all_invoice_data = extract_pdf_data(directory)

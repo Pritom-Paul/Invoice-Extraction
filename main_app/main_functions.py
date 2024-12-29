@@ -13,7 +13,7 @@ from pdf_extraction.extract_invoice_dates import extract_invoice_dates
 from pdf_extraction.extract_hs_code import extract_hs_code
 from pdf_extraction.extract_goods_type import extract_goods_type
 from pdf_extraction.extract_quantity import extract_quantity
-from pdf_extraction.extract_hm_code import extract_hm_code
+from pdf_extraction.extract_po_number import extract_po_number
 from pdf_extraction.extract_MOT import extract_MOT
 from pdf_extraction.extract_description import extract_description
 from pdf_extraction.extract_goods_description import extract_goods_description
@@ -42,7 +42,7 @@ def extract_pdf_data(directory):
             quantities = extract_quantity(text)
             MOT_values = extract_MOT(text)
             goods_descriptions = extract_goods_description(text)
-            hm_codes = extract_hm_code(text)
+            po_numbers = extract_po_number(text)
             exporter_refs = extract_exporter_refs(pdf_path)  # Correct use of pdf_path
             toPay=extract_to_pay(text)
             POL=extract_POL(text)
@@ -58,19 +58,19 @@ def extract_pdf_data(directory):
 
             exporter_ref = exporter_refs[0] if exporter_refs else "N/A"
 
-            for number, hs_code, toPay, POL, warehouse_id, goods_type, quantity, MOT, description, hm_code in zip(
-                    invoice_numbers, hs_codes, toPay, POL, warehouse_id, goods_types, quantities, MOT_values, goods_descriptions, hm_codes):
+            for number, hs_code, toPay, POL, warehouse_id, goods_type, quantity, MOT, description, po_number in zip(
+                    invoice_numbers, hs_codes, toPay, POL, warehouse_id, goods_types, quantities, MOT_values, goods_descriptions, po_numbers):
                 
 
                 all_invoice_data.append({
                     'INVOICE NO': number,
                     # 'INVOICE DATE': invoice_dates, 
-                    'EXPORTERS REF': exporter_ref,
+                    # 'EXPORTERS REF': exporter_ref,
                     # 'HS CODE': hs_code,
                     # 'DESCRIPTION': goods_type,
                     # 'COMPOSITION': description,
                     # 'QUANTITY': quantity,
-                    # 'PO NO': hm_code,
+                    'PO NO': po_number,
                     # 'COUNTRY ISO': MOT,
                     # 'TO PAY': toPay,
                     # 'POL': POL,
