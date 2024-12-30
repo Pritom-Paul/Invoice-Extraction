@@ -8,8 +8,9 @@ from datetime import datetime
 from pdf_extraction.excel_function import save_excel
 
 # Main function to process PDFs
-def extract_invoices():
-    directory = r'C:\Users\Altersense\Desktop\NEW\Bitopi'
+directory = r'C:\Users\Altersense\Desktop\NEW\Bitopi'
+def extract_invoices(directory):
+    
 
     # List to store rows of data for the DataFrame
     data = []
@@ -75,4 +76,4 @@ def extract_invoices():
 
 # Entry point for the script
 if __name__ == "__main__":
-    extract_invoices()
+    extract_invoices(directory)
