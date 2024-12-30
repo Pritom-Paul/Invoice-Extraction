@@ -10,3 +10,4 @@ def extract_tables_with_pdfplumber(pdf_path):
             if table:
                 tables.extend(table)
     return tables
+
