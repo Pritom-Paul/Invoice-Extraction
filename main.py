@@ -9,7 +9,7 @@ from pdf_extraction.excel_function import save_excel
 
 # Main function to process PDFs
 directory = r'C:\Users\Altersense\Desktop\NEW\Bitopi'
-def extract_invoices(directory):
+def extract_pdf_data(directory):
     
 
     # List to store rows of data for the DataFrame
@@ -44,7 +44,7 @@ def extract_invoices(directory):
 
                 # Append the extracted warehouse codes (as a list or string), goods description, HS code, and table data to the data list
                 data.append({
-                    "PDF File Name": pdf_file,
+                    # "PDF File Name": pdf_file,
                     "Invoice No": invoice_no,
                     "Invoice Date": invoice_date,
                     "Exp No": exp_no, 
@@ -76,4 +76,4 @@ def extract_invoices(directory):
 
 # Entry point for the script
 if __name__ == "__main__":
-    extract_invoices(directory)
+    extract_pdf_data(directory)
