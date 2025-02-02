@@ -33,6 +33,30 @@ def extract_warehouse_code(text):
 
 
 # Function to extract goods description
+# def extract_goods_description(text):
+#     lines = text.splitlines()
+
+#     # Search for the line containing "Total Amount"
+#     for i, line in enumerate(lines):
+#         if "Total Amount" in line:
+#             # The next line contains the order number and the description
+#             next_line = lines[i + 1].strip()  # Get the line immediately after "Total Amount"
+            
+#             # Extract the goods description which is between the start of the line and the first full stop
+#             description_match = re.search(r"([A-Za-z\s]+)(?=\.)", next_line)
+            
+#             if description_match:
+#                 description = description_match.group(1).strip()
+#                 return description
+#             else:
+#                 return "No goods description found."
+#             break  # Stop after processing the first "Total Amount" line
+#     return "'Total Amount' not found in the text."
+
+
+# Function to extract goods description
+import re
+
 def extract_goods_description(text):
     lines = text.splitlines()
 
@@ -40,16 +64,23 @@ def extract_goods_description(text):
     for i, line in enumerate(lines):
         if "Total Amount" in line:
             # The next line contains the order number and the description
-            next_line = lines[i + 1].strip()  # Get the line immediately after "Total Amount"
+            next_line = lines[i + 1].strip() if i + 1 < len(lines) else ""
             
-            # Extract the goods description which is between the start of the line and the first full stop
-            description_match = re.search(r"([A-Za-z\s]+)(?=\.)", next_line)
+            # First attempt: Extract the goods description which is between the start of the line and the first full stop
+            description_match = re.search(r"([A-Za-z\s\-&]+)(?=\.)", next_line)
             
             if description_match:
                 description = description_match.group(1).strip()
                 return description
             else:
-                return "No goods description found."
+                # Second attempt: If no full stop, match until the first number or dollar sign
+                description_match_alt = re.search(r"([A-Za-z\s\-&]+)(?=\s\d|\s\$)", next_line)
+                
+                if description_match_alt:
+                    description = description_match_alt.group(1).strip()
+                    return description
+                else:
+                    return ""  # Return empty string if neither pattern matches
             break  # Stop after processing the first "Total Amount" line
     return "'Total Amount' not found in the text."
 
@@ -213,3 +244,32 @@ def extract_order_numbers(text):
             else:
                 print("No order number found in the line after 'Total Amount'.")
             break  # Stop after processing the first "Total Amount" line
+        
+
+def extract_concern(text):
+    lines = text.splitlines()
+    concern = lines[0].strip()
+    concern = concern.split(" ")[0]
+    concern = concern.upper()
+    return concern
+
+def extract_carrier(text):
+    # First attempt: Matching "Carrier : By <CarrierName>"
+    match = re.search(r'Carrier\s*:\s*By\s+([\w-]+)', text, re.IGNORECASE)
+    
+    if match:
+        return match.group(1)
+    
+    # Second attempt: Matching "Carrier : <CarrierName>"
+    match = re.search(r'Carrier\s*:\s*([\w-]+)', text, re.IGNORECASE)
+    
+    return match.group(1) if match else None
+
+def extract_port_of_loading(text):
+    # First attempt: Matching "Port of Loading : <PortName>, <Country>"
+    match = re.search(r'Port of Loading\s*:\s*([\w\s]+),', text, re.IGNORECASE)
+    
+    if match:
+        return match.group(1).strip() 
+    else:
+        return None

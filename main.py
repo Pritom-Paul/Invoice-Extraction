@@ -8,7 +8,7 @@ from datetime import datetime
 from pdf_extraction.excel_function import save_excel
 
 # Main function to process PDFs
-directory = r'C:\Users\Altersense\Desktop\NEW\Bitopi'
+directory = r'C:\Users\Altersense\Desktop\bitopi_invoices'
 def extract_pdf_data(directory):
     
 
@@ -23,7 +23,7 @@ def extract_pdf_data(directory):
                 text = extract_text_with_pdfplumber(pdf_path)
 
                 tables = extract_tables_with_pdfplumber(pdf_path)
-                # print(f"Tables from {pdf_file}: {tables}")
+                # print(f"Extracted text from {pdf_file}: {text}")
                 
 
                 # Extract countries, quantities, cartons, and gross weight from the tables
@@ -41,6 +41,18 @@ def extract_pdf_data(directory):
                 warehouse_codes = extract_warehouse_code(text)
                 goods_description = extract_goods_description(text)
                 hs_code = extract_hs_code(text)
+                concern = extract_concern(text)
+                # print(name)
+                carrier = extract_carrier(text)
+                # print(carrier)
+                port_of_loading = extract_port_of_loading(text)
+                # print(port_of_loading)
+                
+                # Extract the country_iso
+                if '-' in warehouse_codes[0]:
+                    country_iso = warehouse_codes[0].split('-')[1]
+                else:
+                    country_iso = countries[0] if countries else None
 
                 # Append the extracted warehouse codes (as a list or string), goods description, HS code, and table data to the data list
                 data.append({
@@ -59,6 +71,10 @@ def extract_pdf_data(directory):
                     "Quantities": quantities,
                     "Cartons": cartons,
                     "Gross Weight": gross_weight,
+                    "Country ISO": country_iso,
+                    "Concern": concern,
+                    "Carrier": carrier,
+                    "Port of Loading": port_of_loading
                 })
 
         # Convert the list of dictionaries into a DataFrame
