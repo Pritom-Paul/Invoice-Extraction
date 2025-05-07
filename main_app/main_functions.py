@@ -24,6 +24,8 @@ from pdf_extraction.extract_POL import extract_POL
 from pdf_extraction.extract_warehouse_id import extract_warehouse_id
 from pdf_extraction.extract_carton import extract_carton
 from pdf_extraction.extract_gross_weight import extract_gross_weight
+from pdf_extraction.extract_port_of_loading import extract_port_of_loading
+from pdf_extraction.extract_exporter import extract_exporter_from_table
 
 def extract_pdf_data(directory):
     try:
@@ -37,6 +39,7 @@ def extract_pdf_data(directory):
         for pdf_file in pdf_files:
             pdf_path = os.path.join(directory, pdf_file)  # Ensure this is defined inside the loop  # Ensure this is defined inside the loop
             text = extract_text_with_pdfplumber(pdf_path)
+            tables = extract_tables_with_pdfplumber(pdf_path)
             invoice_numbers = extract_invoice_numbers(text)
             invoice_dates = extract_invoice_dates(text)
             hs_codes = extract_hs_code(text)
@@ -51,6 +54,8 @@ def extract_pdf_data(directory):
             warehouse_id=extract_warehouse_id(text)
             cartons = extract_carton(text)
             gross_weight = extract_gross_weight(text)
+            port_of_loading = extract_port_of_loading(text)  
+            exporter = extract_exporter_from_table(tables)
 
             # Check if any invoice number is extracted
             if invoice_numbers:
@@ -76,11 +81,13 @@ def extract_pdf_data(directory):
                     # 'QUANTITY': quantity,
                     # 'PO NO': hm_code,
                     # 'COUNTRY ISO': MOT,
-                    # 'TO PAY': toPay,
+                    'TO PAY': toPay,
                     # 'POL': POL,
                     # 'WAREHOUSE ID': warehouse_id,
-                    'CARTONS': cartons,
-                    'GROSS WEIGHT': gross_weight,
+                    # 'CARTONS': cartons,
+                    # 'GROSS WEIGHT': gross_weight,
+                    'PORT OF LOADING': port_of_loading,
+                    'EXPORTER': exporter,
                     # 'FCR STATUS': None
                 })
                 valid_invoices += 1

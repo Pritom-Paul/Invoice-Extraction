@@ -8,6 +8,7 @@ import os
 
 if __name__ == "__main__":
     directory = r'C:\Users\Altersense\Desktop\fakir invoices'
+    # directory = r'C:\Users\Altersense\Desktop\fakir invoices\INVOICES\Mongla'
 
     try:
         all_invoice_data = extract_pdf_data(directory)
@@ -23,9 +24,9 @@ if __name__ == "__main__":
 
         # Print DataFrame to EXCEL file in the same directory
         
-        output_file_path = os.path.join(directory, 'invoice_data.xlsx')
-        save_excel(df, 'invoice_data')
-        save_excel(df, output_file_path)
+        # output_file_path = os.path.join(directory, 'invoice_data.xlsx')
+        # save_excel(df, 'invoice_data')
+        # save_excel(df, output_file_path)
 
         print(df.to_string(index=False))
 
