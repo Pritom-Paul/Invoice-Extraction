@@ -26,6 +26,7 @@ from pdf_extraction.extract_carton import extract_carton
 from pdf_extraction.extract_gross_weight import extract_gross_weight
 from pdf_extraction.extract_port_of_loading import extract_port_of_loading
 from pdf_extraction.extract_exporter import extract_exporter_from_table
+from pdf_extraction.extract_exp_no import extract_exp_no
 
 def extract_pdf_data(directory):
     try:
@@ -38,7 +39,11 @@ def extract_pdf_data(directory):
 
         for pdf_file in pdf_files:
             pdf_path = os.path.join(directory, pdf_file)  # Ensure this is defined inside the loop  # Ensure this is defined inside the loop
-            text = extract_text_with_pdfplumber(pdf_path)
+            try:
+                text = extract_text_with_pdfplumber(pdf_path)
+            except Exception as e:
+                print(f"Error reading {pdf_file}: {e}")
+                continue
             tables = extract_tables_with_pdfplumber(pdf_path)
             invoice_numbers = extract_invoice_numbers(text)
             invoice_dates = extract_invoice_dates(text)
@@ -56,6 +61,10 @@ def extract_pdf_data(directory):
             gross_weight = extract_gross_weight(text)
             port_of_loading = extract_port_of_loading(text)  
             exporter = extract_exporter_from_table(tables)
+            full_exp_no = extract_exp_no(exporter_refs[0]) if exporter_refs else "N/A"
+            # full_exp_no = extract_exp_no(exporter_refs['Exporters Ref'].iloc[0]) #Works for inctl
+
+            
 
             # Check if any invoice number is extracted
             if invoice_numbers:
@@ -81,13 +90,14 @@ def extract_pdf_data(directory):
                     # 'QUANTITY': quantity,
                     # 'PO NO': hm_code,
                     # 'COUNTRY ISO': MOT,
-                    'TO PAY': toPay,
+                    # 'TO PAY': toPay,
                     # 'POL': POL,
                     # 'WAREHOUSE ID': warehouse_id,
                     # 'CARTONS': cartons,
                     # 'GROSS WEIGHT': gross_weight,
-                    'PORT OF LOADING': port_of_loading,
-                    'EXPORTER': exporter,
+                    # 'PORT OF LOADING': port_of_loading,
+                    # 'EXPORTER': exporter,
+                    'EXP NO': full_exp_no,
                     # 'FCR STATUS': None
                 })
                 valid_invoices += 1

@@ -7,7 +7,7 @@ import os
 
 
 if __name__ == "__main__":
-    directory = r'C:\Users\Altersense\Desktop\fakir invoices'
+    directory = r'C:\Users\Altersense\Desktop\ALL INVOICES'
     # directory = r'C:\Users\Altersense\Desktop\fakir invoices\INVOICES\Mongla'
 
     try:
