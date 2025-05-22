@@ -32,7 +32,6 @@ def extract_warehouse_code(text):
     return warehouse_codes  # Return list of warehouse codes
 
 
-# Function to extract goods description
 # def extract_goods_description(text):
 #     lines = text.splitlines()
 
@@ -40,48 +39,104 @@ def extract_warehouse_code(text):
 #     for i, line in enumerate(lines):
 #         if "Total Amount" in line:
 #             # The next line contains the order number and the description
-#             next_line = lines[i + 1].strip()  # Get the line immediately after "Total Amount"
+#             next_line = lines[i + 1].strip() if i + 1 < len(lines) else ""
             
-#             # Extract the goods description which is between the start of the line and the first full stop
-#             description_match = re.search(r"([A-Za-z\s]+)(?=\.)", next_line)
+#             # First attempt: Extract the goods description which is between the start of the line and the first full stop
+#             description_match = re.search(r"([A-Za-z\s\-&]+)(?=\.)", next_line)
             
 #             if description_match:
 #                 description = description_match.group(1).strip()
 #                 return description
 #             else:
-#                 return "No goods description found."
+#                 # Second attempt: If no full stop, match until the first number or dollar sign
+#                 description_match_alt = re.search(r"([A-Za-z\s\-&]+)(?=\s\d|\s\$)", next_line)
+                
+#                 if description_match_alt:
+#                     description = description_match_alt.group(1).strip()
+#                     return description
+#                 else:
+#                     return ""  # Return empty string if neither pattern matches
 #             break  # Stop after processing the first "Total Amount" line
 #     return "'Total Amount' not found in the text."
 
 
 # Function to extract goods description
-import re
+# import re
+
+# def extract_goods_description(text):
+#     text = """Order No. Description of Goods Quantity Unit Price Total Amount
+#                362365-1779 LADIES WOVEN TROUSERS TEXTA  1,470Pcs $ 8.4681 /Pcs $ 12,448.11
+#                TEXTB 73% COTTON. 26% POLYESTER. 1% ELASTANE, CAT 6 ,
+#                HS CODE. 620462"""
+#     lines = text.splitlines()
+#     # print(lines)
+
+#     for i, line in enumerate(lines):
+#         if "Total Amount" in line:
+#             next_line = lines[i + 1].strip() if i + 1 < len(lines) else ""
+
+#             # Attempt to extract the product name between the order number and the first numeric or percentage value
+#             # match = re.search(r"\d{6,}-\d{4,}\s+(.+?)(?=\s+\d+%|\s+\d+Pcs|\s+\$)", next_line)
+#             match = re.search(r"\d{6,}-\d{4,}\s+(.+?)(?=\s+\d+%)", next_line)
+#             if match:
+#                 description = match.group(1).strip()
+#                 return description
+
+#             return ""
+#     return "'Total Amount' not found in the text."
+
 
 def extract_goods_description(text):
-    lines = text.splitlines()
-
-    # Search for the line containing "Total Amount"
+    # text = """Order No. Description of Goods Quantity Unit Price Total Amount
+    #         362365-1779 LADIES WOVEN TROUSERS TEXTA  1,470Pcs $ 8.4681 /Pcs $ 12,448.11
+    #         TEXTB 73% COTTON. 26% POLYESTER. 1% ELASTANE, CAT 6 ,
+    #         HS CODE. 620462"""
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    
     for i, line in enumerate(lines):
         if "Total Amount" in line:
-            # The next line contains the order number and the description
-            next_line = lines[i + 1].strip() if i + 1 < len(lines) else ""
+            # Get the next line (where the order number and description start)
+            next_line = lines[i + 1] if i + 1 < len(lines) else ""
             
-            # First attempt: Extract the goods description which is between the start of the line and the first full stop
-            description_match = re.search(r"([A-Za-z\s\-&]+)(?=\.)", next_line)
+            # Remove order number and unwanted patterns (quantities, prices, amounts)
+            cleaned_line = re.sub(
+                r"^\d{6,}-\d{4,}\s+",  # Remove order number
+                "", 
+                next_line
+            )
+            cleaned_line = re.sub(
+                r"\s*\d+[,.]?\d*Pcs.*",  # Remove quantities, prices, amounts (e.g., "1,470Pcs $ 8.4681 /Pcs $ 12,448.11")
+                "", 
+                cleaned_line
+            ).strip()
             
-            if description_match:
-                description = description_match.group(1).strip()
-                return description
-            else:
-                # Second attempt: If no full stop, match until the first number or dollar sign
-                description_match_alt = re.search(r"([A-Za-z\s\-&]+)(?=\s\d|\s\$)", next_line)
-                
-                if description_match_alt:
-                    description = description_match_alt.group(1).strip()
-                    return description
+            # If a percentage is found in this line, return up to that point
+            percentage_match = re.search(r"(.+?)(?=\s+\d+%)", cleaned_line)
+            if percentage_match:
+                first_line_desc = percentage_match.group(1).strip()
+                if first_line_desc.endswith('.'):
+                    first_line_desc = first_line_desc[:-1].strip()
+                return first_line_desc if first_line_desc else ""
+            
+            # If no percentage, check the next lines until one is found
+            remaining_lines = []
+            for j in range(i + 2, len(lines)):
+                current_line = lines[j]
+                if re.search(r"\d+%", current_line):
+                    # Take text before the first percentage
+                    match = re.search(r"(.+?)(?=\s+\d+%)", current_line)
+                    if match:
+                        remaining_lines.append(match.group(1).strip())
+                    break
                 else:
-                    return ""  # Return empty string if neither pattern matches
-            break  # Stop after processing the first "Total Amount" line
+                    remaining_lines.append(current_line.strip())
+            
+            # Combine first part and remaining lines
+            full_description = f"{cleaned_line} {' '.join(remaining_lines)}".strip()
+            if full_description.endswith('.'):
+                full_description = full_description[:-1].strip()
+            return full_description if full_description else ""
+    
     return "'Total Amount' not found in the text."
 
 # Function to extract HS CODE
@@ -271,5 +326,16 @@ def extract_port_of_loading(text):
     
     if match:
         return match.group(1).strip() 
+    else:
+        return None
+
+def extract_total_amount(text):
+    # Find all occurrences of "$" followed by a number
+    matches = re.findall(r'\$\s*([\d,]+\.\d{2})', text)
+    
+    if matches:
+        # Take the last occurrence and remove commas
+        last_amount = matches[-1].replace(',', '')
+        return last_amount
     else:
         return None
