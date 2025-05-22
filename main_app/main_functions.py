@@ -86,7 +86,7 @@ def extract_pdf_data(directory):
                     # 'EXPORTERS REF': exporter_ref,
                     # 'HS CODE': hs_code,
                     # 'DESCRIPTION': goods_type,
-                    # 'COMPOSITION': description,
+                    'COMPOSITION': description,
                     # 'QUANTITY': quantity,
                     # 'PO NO': hm_code,
                     # 'COUNTRY ISO': MOT,
@@ -97,7 +97,7 @@ def extract_pdf_data(directory):
                     # 'GROSS WEIGHT': gross_weight,
                     # 'PORT OF LOADING': port_of_loading,
                     # 'EXPORTER': exporter,
-                    'EXP NO': full_exp_no,
+                    # 'EXP NO': full_exp_no,
                     # 'FCR STATUS': None
                 })
                 valid_invoices += 1
