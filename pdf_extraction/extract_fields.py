@@ -87,10 +87,13 @@ def extract_warehouse_code(text):
 
 
 def extract_goods_description(text):
-    # text = """Order No. Description of Goods Quantity Unit Price Total Amount
-    #         362365-1779 LADIES WOVEN TROUSERS TEXTA  1,470Pcs $ 8.4681 /Pcs $ 12,448.11
-    #         TEXTB 73% COTTON. 26% POLYESTER. 1% ELASTANE, CAT 6 ,
-    #         HS CODE. 620462"""
+    # print(text)
+    # text ="""Order No. Description of Goods Quantity Unit Price Total Amount
+    #         359351-7613 GIRLS WOVEN DRESS AND T-SHIRT TEXT E. 345Pak/ 690 Pcs $ 6.4990 /Pak $ 2,242.16 
+    #         100% COTTON, 96% COTTON. 4% ELASTANE. (2
+    #         PCS PAK), CAT 78 , HS CODE. 620462,
+    #         610910"""
+            
     lines = [line.strip() for line in text.splitlines() if line.strip()]
     
     for i, line in enumerate(lines):
@@ -105,7 +108,7 @@ def extract_goods_description(text):
                 next_line
             )
             cleaned_line = re.sub(
-                r"\s*\d+[,.]?\d*Pcs.*",  # Remove quantities, prices, amounts (e.g., "1,470Pcs $ 8.4681 /Pcs $ 12,448.11")
+                r"\s*\d+[,.]?\d*\s*(Pak\/|Pcs|Pc\/Pak).*?\$\s*\d+[,.]?\d*\s*\/Pak\s*\$\s*\d+[,.]?\d*.*",  
                 "", 
                 cleaned_line
             ).strip()
@@ -124,7 +127,7 @@ def extract_goods_description(text):
                 current_line = lines[j]
                 if re.search(r"\d+%", current_line):
                     # Take text before the first percentage
-                    match = re.search(r"(.+?)(?=\s+\d+%)", current_line)
+                    match = re.search(r"^(.*?)\d+%", current_line)
                     if match:
                         remaining_lines.append(match.group(1).strip())
                     break
@@ -133,7 +136,7 @@ def extract_goods_description(text):
             
             # Combine first part and remaining lines
             full_description = f"{cleaned_line} {' '.join(remaining_lines)}".strip()
-            if full_description.endswith('.'):
+            if full_description.endswith(('.',',')):
                 full_description = full_description[:-1].strip()
             return full_description if full_description else ""
     
