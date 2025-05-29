@@ -8,7 +8,7 @@ from datetime import datetime
 from pdf_extraction.excel_function import save_excel
 
 # Main function to process PDFs
-directory = r'C:\Users\Altersense\Desktop\Incomplete Invoices'
+directory = r'C:\Users\Altersense\Desktop\FAULTS\New folder\New folder'
 def extract_pdf_data(directory):
     
 
@@ -38,12 +38,12 @@ def extract_pdf_data(directory):
                 exp_date = extract_exp_dates(text)
                 invoice_date = extract_invoice_dates(text)
                 invoice_no = extract_invoice_numbers(text)
-                print(invoice_no)
+                # print(invoice_no)
                 order_no = extract_order_numbers(text)
                 exp_no = extract_exp_numbers(text)
                 warehouse_codes = extract_warehouse_code(text)
                 goods_description = extract_goods_description(text)
-                print(goods_description)
+                # print(goods_description)
                 hs_code = extract_hs_code(text)
                 concern = extract_concern(text)
                 # print(name)
@@ -53,12 +53,32 @@ def extract_pdf_data(directory):
                 # print(port_of_loading)
                 total_amount = extract_total_amount(text)
                 total_quantity = sum(int(q) for q in quantities if q.isdigit()) if quantities else None
+                # print(f"invoice_no: {invoice_no}")
+                # print(f"invoice_date: {invoice_date}")
+                # print(f"exp_no: {exp_no}")
+                # print(f"exp_date: {exp_date}")
+                # print(f"contract_no: {contract_no}")
+                # print(f"contract_date: {contract_date}")
+                # print(f"order_no: {order_no}")
+                # print(f"goods_description: {goods_description}")
+                # print(f"hs_code: {hs_code}")
+                # print(f"warehouse_codes: {warehouse_codes}")
+                # print(f"countries: {countries}")
+                # print(f"quantities: {quantities}")
+                # print(f"cartons: {cartons}")
+                # print(f"gross_weight: {gross_weight}")
+                # print(f"concern: {concern}")                
+                # print(f"carrier: {carrier}")
+                # print(f"port_of_loading: {port_of_loading}")                
+                # print(f"total_amount: {total_amount}")
+                # print(f"total_quantity: {total_quantity}")
                 
                 # Extract the country_iso
                 if '-' in warehouse_codes[0]:
                     country_iso = warehouse_codes[0].split('-')[1]
                 else:
                     country_iso = countries[0] if countries else None
+                    # print(f"country_iso: {country_iso}")
 
                 # Append the extracted warehouse codes (as a list or string), goods description, HS code, and table data to the data list
                 data.append({
